@@ -1,0 +1,213 @@
+\documentclass[
+    12pt,
+    a4paper,
+    oneside, 
+    headinclude,footinclude,
+    BCOR5mm,
+]{scrartcl}
+%----------------------------------------------------------------------------------------
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{booktabs}
+%----------------------------------------------------------------------------------------
+\usepackage{sectsty}
+\allsectionsfont{\rmfamily \mdseries \scshape}
+%----------------------------------------------------------------------------------------
+
+\hyphenation{Fortran hy-phen-ation}
+
+%----------------------------------------------------------------------------------------
+\newcommand{\cmd}[1]{\texttt{#1}}
+\newcommand{\exercisequote}[1]{%
+    {\quad\bfseries \small From the problem formulation:}%
+    \vspace{-.5em}%
+    \begin{quote}\itshape %
+        #1 %
+    \end{quote}%
+}
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+\begin{centering}
+    {\scshape \LARGE Problem Set 1 \par}
+    {\scshape Advanced Methods in Applied Statistics 2016 \par}
+    {\itshape \small Solution by Gorm Galster. \par}
+\end{centering}
+
+
+\subsection*{Regarding Format}
+I have very little idea about the format of this report and any feedback is welcome.
+Particularly I am uncertain to what extend implementation details should be discussed or not.
+
+
+The provided code is \cmd{python3} and makes use of \cmd{numpy} and \cmd{matplotlib}.
+A GNU make-compatible Makefile is provided to download and parse idata and to generate all plots and tables in this report 
+as well as a handful of others that didn't make it in here. Simply type \cmd{make} in the top level directory\footnote{This has not been tested on Mac and might break to the extend that they break POSIX.}.
+
+
+\section*{Exercise 1}
+\subsection*{Getting the Data}
+\exercisequote{%
+    Take the 2014 Ken Pomeroy data related to NCAA College Basketball analytics %
+    from \href{http://kenpom.com/index.php?y=2014}{http://kenpom.com/index.php?y=2014}
+}
+The HTML data is download, parsed and slimmed directly in the provided Makefile
+using \cmd{curl}, \cmd{sed}, \cmd{cut} and friends.
+The resulting data set is a tab separated file with the following columns:
+\begin{enumerate}
+    \item Team name ;
+    \item Conference abbreviation ;
+    \item Adjusted Offensive (AdjO) ;
+    \item Adjusted Defensive (AdjD).
+\end{enumerate}
+This format is used for all exercises as the input format for provided python code.
+
+
+\subsection*{Histogramming}
+\exercisequote{%
+    On a single plot draw histograms of 
+    the Adjusted Defence for all the teams in the 5 conferences 
+    (ACC, SEC, B10, BSky, and A10)
+    [with] different colours for each conference and add a legend.
+    Save [the histogram] as a PDF.
+}
+
+Figure~\ref{fig:1:stacked_hist_2014} show a stacked histogram of the teams AdjD.
+The histogram is produced using the provided script \cmd{hist\_adjd.py}.
+The script uses \cmd{matplotlib}'s \cmd{pyplot.savefig} as output driver
+and thus support any common output format,
+including PDF.
+
+\section*{Exercise 2}
+\subsection*{Difference in AdjO}
+\exercisequote{
+    Calculate the difference in AdjO for all the teams in the 5 
+    conferences from Exercise 1:
+    2014 minus 2009 as a function of the 2009 AdjO value.
+    Plot the data as a graph with a data point for each team entry being 
+    the same conference colour as for the previous histogram in Exercise 1.
+}
+
+\textbf{Interpretation of Formulation:}
+It is worth noting that teams change conference over time.
+This means that not all teams in the 5 conferences in the 2014 data are in the same conferences
+in the 2009 data.
+I have chosen to take the problem formulation quite literally and have:
+\begin{itemize}
+    \item Filtered the 2014 data set based on the 5 conferences in Exercise 1 to obtain a list of team names.
+    \item Filtered the 2009 data set based on the list of team names.
+    \item Removed any team which might only have data in one of the two data sets.
+\end{itemize}
+If another approach is followed, such as filtering both 2009 and 2014 data for teams in the same five conferences,
+different results will be obtained.
+Implementation wise this is the difference between passing the list of conferences via the argument
+\cmd{--conferences-new} or via \cmd{--conferences} (which filters both new and old data)
+to the provided python script, \cmd{diff\_adjo.py}.\\
+
+
+
+%\subsection*{The Plots}
+The plot in Figure~\ref{fig:2:diff_noother} show the difference in AdjO
+for teams who in 2014 were in the five conferences considered in Exercise 1,
+using the same colour coding as in Figure~\ref{fig:1:stacked_hist_2014}.
+
+\subsection*{Median and Means}
+\exercisequote{
+    Calculate the difference in ``AdjO'' for all the teams with data in both 2009 and 2014.
+    [Present in a pleasant way the] median and mean for each of the 5 conferences [as well as] median and mean for teams that were not in the 5 conferences.
+}
+By providing \cmd{diff\_adjo.py} with the argument \cmd{--median-and-mean},
+the script will add a median and mean to the plot in case an image file is provided via \cmd{--output}
+or otherwise print the per conference median and mean to a file.
+%
+In addition, by using the argument \cmd{--use-other} the script will include data from the remainder conferences
+and merge these into a pseudo conference called "Other", an example is given in Figure~\ref{fig:2:diff_other}.
+
+
+The median and mean of the five conferences as well as the remainder conferences are shown in Table~\ref{tbl:2:median_mean}.
+Figure~\ref{fig:2:diff_other_median_mean} show the data overlaid with the mean and median from Table~\ref{tbl:2:median_mean}.
+By-eye the obtained results seem reasonable.
+
+
+
+
+
+\section*{Exercise 3}
+\subsection*{Adding Another Team}
+\exercisequote{
+    Redo Exercises 1 and 2, while now adding the ``BE''
+    conference to the previous list of 5 conferences
+}
+
+This is achieved by extending the conference filter provided
+as argument for \cmd{hist\_adjd.py} and \cmd{diff\_adjo.py}.
+
+
+\subsection*{The Plots}
+
+Figure~\ref{fig:3:stacked_hist_2014} is a stacked histogram
+which in addition to the teams included in Figure~\ref{fig:1:stacked_hist_2014}
+also includes BE.\\
+Figure~\ref{fig:3:diff_noother} corresponds to Figure~\ref{fig:2:diff_noother}
+but includes the BE.\\
+Lastly, the data in Table~\ref{tbl:3:median_mean} show the median and mean
+for the conferences in question as well as the remainder of conferences grouped as one.
+Figure~\ref{fig:3:diff_other_median_mean} show the data of Table~\ref{tbl:3:median_mean}
+overlaid on data.\\
+Again, the results seem reasonable by visual inspection. The data in Table~\ref{tbl:3:median_mean} is further seen to be compatible with the data in Table~\ref{tbl:2:median_mean}: As BE seem to have a lower mean value for the difference in AdjO than the Other conference(s), it is expected (and in agreement with the presented results) that the mean value for the difference in AdjO for the Other conference(s) increases when BE is no longer included in this calculation.
+
+\section*{Exercise 4}
+\subsection*{Different Differences}
+\exercisequote{
+    Check to see if my results are different than yours, and if so what is
+    the root cause? Did you have a bug, did I have a bug, or was there
+    ambiguity in the task?
+}
+I don't have your results at hand so I can't really compare.
+However, there is room for some interpretation in Exercise 2
+with regards to how to treat teams that change conference
+between the two data sets 
+-- both within the 5 (or 6) conferences
+but also to/from a conference not in the selection.
+This could easily lead to differences in results obtained.
+
+The plotting script allow a large flexibility in terms of
+generating plots/tables for different interpretations:
+An additional argument, \cmd{--only-same-confs}, can be provided
+to only use data for teams that are in the same conference
+for both data sets.
+The arguments \cmd{--conferences-new} and \cmd{--conferences-old}
+allow for setting a different initial conference based filtering
+on the new and the old data, respectively.
+This allows for a coarse filtering of which to/from conference 
+changes are allowed.
+
+\subsection*{New Teams}
+\exercisequote{
+    Redo the means and medians from Exercise 2 using only the SWAC
+    and CUSA conferences
+}
+By changing the conference filtering to only include SWAC and CUSA
+and by having \cmd{diff\_adjo.py} regroup the remainder teams,
+the data in Table~\ref{tbl:4:median_mean} as well as Figure~\ref{fig:4:diff_other_median_mean}
+was produced.
+
+
+\subsection*{Faster, Stronger}
+\exercisequote{
+    While retaining clarity (and omitting in-line comments), can you
+    rewrite your code to be: Faster and use less system resources (memory and CPU)? How much faster? Shorter in length? How much shorter?
+}
+
+
+
+\appendix
+
+%\begin{figure}[ht!]
+%    \centering
+%    \includegraphics[width=\textwidth]{}
+%    \caption{}
+%    \label{fig:2:diff_other}
+%\end{figure}
+
+\end{document}

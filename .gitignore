@@ -1,2 +1,11 @@
 *.pdf
+
 *.class
+*/out/*
+*.xml
+
+*.out
+
+*.aux
+*.log
+*.gz

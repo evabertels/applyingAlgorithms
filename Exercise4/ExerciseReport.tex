@@ -1,0 +1,167 @@
+\documentclass[
+    12pt,
+    a4paper,
+    oneside, 
+    headinclude,footinclude,
+    BCOR5mm,
+]{scrartcl}
+%----------------------------------------------------------------------------------------
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{listings}
+\usepackage{color}
+ 
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+ 
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle}
+%----------------------------------------------------------------------------------------
+\usepackage{sectsty}
+\allsectionsfont{\rmfamily \mdseries \scshape}
+%----------------------------------------------------------------------------------------
+
+\hyphenation{Fortran hy-phen-ation}
+
+%----------------------------------------------------------------------------------------
+\newcommand{\cmd}[1]{\texttt{#1}}
+\newcommand{\exercisequote}[1]{%
+    {\quad\bfseries \small From the problem formulation:}%
+    \vspace{-.5em}%
+    \begin{quote}\itshape %
+        #1 %
+    \end{quote}%
+}
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+\begin{centering}
+    {\scshape \LARGE Exercise 4 \par}
+    {\scshape Priority Queue Sort Experiment \par}
+    {\itshape \small Solution by Eva Bertels. \par}
+\end{centering}
+
+\section*{Problem Description}
+There are different ways to generate sorted output that shows different performance for input of varying format and size. 
+This report focuses on the performance analysis of the library sorting function versus a priority queue implementation.
+
+The performance of both approaches is measured for implementations in C/C++, JAVA and Python. 
+The performance metric regarded is runtime, the indicator used is seconds taken by a stopwatch.
+
+\section*{Input}
+Input is generated in growing size: $10^{1}, 10^{2}, \ldots , 10^{6}$.
+
+\begin{enumerate}
+\item A list of random integers, range 100 and $10^5$
+\item A list of random floating point numbers, range 100 and $10^5$
+\item A list of sorted integers, range 100
+\item A list of sorted floating point numbers, range 100
+\item A list of random strings of length 3
+\item A list of sortend strings of length 3
+\end{enumerate}
+
+
+\section*{Implementation}
+
+\subsection*{C/C++}
+
+To test the running time of the library sorting function versus a priority queue structure in C/C++ I made use of the code from the demonstration in the exercise class on 19. September 2017. 
+
+It shows the example of a list of 10 random numbers chosen from the range 0 -- 99 (seed 0 for reproducability).
+For the experiments input of different sizes and different values are used.
+
+\begin{lstlisting}[language=C++, caption=Sorting in C++]
+#include<iostream>
+#include<vector>
+#include<algorithm>
+#include<stdlib.h>
+
+int main(int argc, char **argv) {
+  srand(0);
+  std::vector<int> myVector;
+  
+  for(int x = 0; x < 10; x++) {
+    myVector.push_back(rand() % 100);
+  }
+  std::sort(myVector.begin(), myVector.end());
+
+  for(int x = 0; x < 10; x++){
+    std::cout << myVector[x] << std::endl;
+  }
+  return 0;
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language=C++, caption=Priority Queue in C++]
+#include<iostream>
+#include<vector>
+#include<queue>
+#include<algorithm>
+#include<stdlib.h>
+
+int main(int argc, char **argv) {
+  srand(0);
+  std::priority_queue<int,std::vector<int>,std::greater<int> > myPQ;
+  for (int x = 0; x < 10; ++x){
+    myPQ.push(rand() % 100);
+  }
+
+  for (int x = 0; x < 10; ++x) {
+    std::cout << myPQ.top() << std::endl;
+    myPQ.pop();
+  }
+  return 0;
+}
+\end{lstlisting}
+
+
+%\appendix
+
+%\begin{figure}[ht!]
+%    \centering
+%    \includegraphics[width=\textwidth]{}
+%    \caption{}
+%    \label{fig:2:diff_other}
+%\end{figure}
+
+
+\section*{Output}
+
+\begin{table}
+\caption{Runtime results}
+\begin{center}
+\begin{tabular}{c|ccc|ccc}
+\hline
+\multirow{2}{*}{Input} & \multicolumn{3}{c}{\textbf{Sorting}} & \multicolumn{3}{c}{\textbf{Queue}} \\
+ & C/C++ & JAVA & Python & C/C++ & JAVA & Python	\\
+\hline
+random Int & 1.1 & 3.2 & 2.3 & -- & 2 & 8 \\
+\hline
+\end{tabular}
+\end{center}
+\label{tab:output}
+\end{table}
+
+
+\end{document}

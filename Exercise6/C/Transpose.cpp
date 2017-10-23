@@ -41,7 +41,7 @@ int main(int argc, char** argv) {
   fillRandom(n, A);
 
   int block = std::stoi(argv[2]);
-  int repetitions = 10;
+  int repetitions = 100;
 
   Matrix B = newMatrix(n);
 

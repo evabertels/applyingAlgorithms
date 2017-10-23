@@ -83,7 +83,7 @@ public class Transpose {
             e.printStackTrace();
         }
 
-        int block = Integer.parseInt(args[3]);
+        int block = Integer.parseInt(args[2]);
         int x = 10;
 
         System.out.println("Transpose matrix of size " + n + ", running both methods " + x + " times each:");
